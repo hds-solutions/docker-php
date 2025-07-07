@@ -86,7 +86,7 @@ for version in "${versions[@]}"; do
 		alpine3.22 \
 		alpine3.21 \
 	; do
-		for variant in cli apache fpm zts; do
+		for variant in cli apache fpm zts fpm-zts; do
 			if [[ "$suite" = alpine* ]]; then
 				if [ "$variant" = 'apache' ]; then
 					continue

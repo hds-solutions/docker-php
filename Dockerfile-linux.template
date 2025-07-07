@@ -219,6 +219,37 @@ ENV GPG_KEYS {{
 			"39B6 4134 3D8C 104B 2B14  6DC3 F9C3 9DC0 B969 8544", # ramsey
 			"F1F6 9223 8FBC 1666 E5A5  CCD4 199F 9DFE F6FF BAFD"  # patrickallaert
 		],
+
+		"8.0": [
+			# https://wiki.php.net/todo/php80#release_managers
+			# https://www.php.net/gpg-keys.php#gpg-8.0
+			"1729 F839 38DA 44E2 7BA0  F4D3 DBDB 3974 70D1 2172", # pollita
+			"BFDD D286 4282 4F81 18EF  7790 9B67 A5C1 2229 118F", # carusogabriel
+			"2C16 C765 DBE5 4A08 8130  F1BC 4B9B 5F60 0B55 F3B4", # carusogabriel
+			"39B6 4134 3D8C 104B 2B14  6DC3 F9C3 9DC0 B969 8544"  # ramsey
+		],
+
+		"7.4": [
+			# https://wiki.php.net/todo/php74#release_managers
+			# https://www.php.net/gpg-keys.php#gpg-7.4
+			"4267 0A7F E4D0 441C 8E46  3234 9E4F DC07 4A4E F02D", # petk
+			"5A52 8807 81F7 5560 8BF8  15FC 910D EB46 F53E A312"  # derick
+		],
+
+		"7.2": [
+			# https://wiki.php.net/todo/php72#release_managers
+			# https://www.php.net/gpg-keys.php#gpg-7.2
+			"B1B4 4D8F 021E 4E2D 6021  E995 DC9F F8D3 EE5A F27F", # remi
+			"1729 F839 38DA 44E2 7BA0  F4D3 DBDB 3974 70D1 2172", # pollita
+			"CBAF 69F1 73A0 FEA4 B537  F470 D66C 9593 118B CCB6"  # cmb
+		],
+
+		"5.6": [
+			# https://wiki.php.net/todo/php56#release_managers
+			# https://www.php.net/gpg-keys.php#gpg-5.6
+			"0BD7 8B5F 9750 0D45 0838  F95D FE85 7D9A 90D9 0EC1", # jpauli
+			"6E4F 6AB3 21FD C07F 2C33  2E3A C2BF 0BC4 33CF C8B3"  # tyrael
+		],
 	}[rcVersion] // error("missing GPG keys for " + rcVersion)
 	| map(gsub(" "; ""))
 	| join(" ")
@@ -328,7 +359,7 @@ RUN set -eux; \
 		CPPFLAGS="$PHP_CPPFLAGS" \
 		LDFLAGS="$PHP_LDFLAGS" \
 # https://github.com/php/php-src/blob/d6299206dd828382753453befd1b915491b741c6/configure.ac#L1496-L1511
-		PHP_BUILD_PROVIDER='https://github.com/docker-library/php' \
+		PHP_BUILD_PROVIDER='HDS Solutions' \
 		PHP_UNAME='Linux - Docker' \
 	; \
 	docker-php-source extract; \
@@ -452,12 +483,13 @@ RUN set -eux; \
 {{ if env.variant == "apache" then ( -}}
 		\
 		--with-apxs2 \
-{{ ) elif env.variant == "fpm" then ( -}}
+{{ ) elif (env.variant == "fpm" or env.variant == "fpm-zts") then ( -}}
 		\
 		--enable-fpm \
 		--with-fpm-user=www-data \
 		--with-fpm-group=www-data \
-{{ ) elif env.variant == "zts" then ( -}}
+{{ ) else "" end -}}
+{{ if (env.variant == "zts" or env.variant == "fpm-zts") then ( -}}
 		\
 		--enable-zts \
 # https://externals.io/message/118859
@@ -547,7 +579,7 @@ COPY apache2-foreground /usr/local/bin/
 WORKDIR /var/www/html
 
 EXPOSE 80
-{{ ) elif env.variant == "fpm" then ( -}}
+{{ ) elif (env.variant == "fpm" or env.variant == "fpm-zts") then ( -}}
 WORKDIR /var/www/html
 
 RUN set -eux; \
@@ -585,8 +617,8 @@ RUN set -eux; \
 		echo '[global]'; \
 		echo 'daemonize = no'; \
 		echo; \
-		echo '[www]'; \
-		echo 'listen = 9000'; \
+		#echo '[www]'; \
+		#echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf; \
 	mkdir -p "$PHP_INI_DIR/conf.d"; \
 	{ \
@@ -598,6 +630,6 @@ RUN set -eux; \
 # https://github.com/php/php-src/blob/17baa87faddc2550def3ae7314236826bc1b1398/sapi/fpm/php-fpm.8.in#L163
 STOPSIGNAL SIGQUIT
 
-EXPOSE 9000
+#EXPOSE 9000
 {{ ) else "" end -}}
 CMD {{ env.cmd }}
