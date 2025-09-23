@@ -81,22 +81,12 @@ for version in "${versions[@]}"; do
 	# order here controls the order of the library/ file
 	for suite in \
 		trixie \
-		bookworm \
-		alpine3.23 \
-		alpine3.22 \
-		alpine3.21 \
+		bullseye \
+		stretch \
 	; do
-		for variant in cli apache fpm zts fpm-zts; do
+		for variant in fpm-zts; do
 			if [[ "$suite" = alpine* ]]; then
 				if [ "$variant" = 'apache' ]; then
-					continue
-				fi
-				if [[ "$rcVersion" = '8.1' ]] && [[ "$suite" = 'alpine3.23' ]]; then
-					# Keep PHP 8.1 with Alpine 3.21 default until end of year; see also https://github.com/docker-library/php/blob/9ab2e4b37addffaa10f06d9e5f54f7bd1f5ef18f/generate-stackbrew-library.sh#L120
-					continue
-				fi
-				if [[ "$rcVersion" != '8.1' ]] && [[ "$suite" = 'alpine3.21' ]]; then
-					# Keep Alpine 3.21 just for 8.1
 					continue
 				fi
 			fi

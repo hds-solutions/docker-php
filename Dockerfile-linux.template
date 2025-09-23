@@ -17,8 +17,8 @@
 		env.version | rtrimstr("-rc")
 	;
 	def clean_apt:
-		# TODO once bookworm is EOL, remove this and just hard-code "apt-get dist-clean" instead
-		if env.from | contains("bookworm") then
+		# TODO remove this and just hard-code "apt-get dist-clean" instead
+		if (env.from | contains("stretch")) or (env.from | contains("bullseye")) then
 			"rm -rf /var/lib/apt/lists/*"
 		else "apt-get dist-clean" end
 	;
@@ -430,10 +430,12 @@ RUN set -eux; \
 		--enable-mbstring \
 # --enable-mysqlnd is included here because it's harder to compile after the fact than extensions are (since it's a plugin for several extensions, not an extension in itself)
 		--enable-mysqlnd \
+{{ if rcVersion != "5.6" then ( -}}
 # https://wiki.php.net/rfc/argon2_password_hash
 		--with-password-argon2 \
 # https://wiki.php.net/rfc/libsodium
 		--with-sodium=shared \
+{{ ) else "" end -}}
 # always build against system sqlite3 (https://github.com/php/php-src/commit/6083a387a81dbbd66d6316a3a12a63f06d5f7109)
 		--with-pdo-sqlite=/usr \
 		--with-sqlite3=/usr \
@@ -491,7 +493,11 @@ RUN set -eux; \
 {{ ) else "" end -}}
 {{ if (env.variant == "zts" or env.variant == "fpm-zts") then ( -}}
 		\
+{{ if rcVersion | IN ("5.6", "7.2", "7.4") then ( -}}
+		--enable-maintainer-zts \
+{{ ) else ( -}}
 		--enable-zts \
+{{ ) end -}}
 # https://externals.io/message/118859
 		--disable-zend-signals \
 {{ if rcVersion | IN("8.1", "8.2") then ( -}}
