@@ -84,16 +84,26 @@ for version in "${versions[@]}"; do
 		bullseye \
 		stretch \
 	; do
-		for variant in fpm-zts; do
-			if [[ "$suite" = alpine* ]]; then
-				if [ "$variant" = 'apache' ]; then
-					continue
-				fi
-			fi
-			export suite variant
-			variants="$(jq <<<"$variants" -c '. + [ env.suite + "/" + env.variant ]')"
-		done
-	done
+	  case "$suite-$version" in
+      # stretch is used for PHP v5.6 only
+	    stretch-5.6) ;;
+	    stretch-*) continue ;;
+
+	    # bullseye is used for PHP v7.2 <=> v8.0
+	    bullseye-7.[2-4]|bullseye-8.0) ;;
+	    bullseye-*) continue ;;
+
+	    # trixie is used for PHP v8.1+
+	    trixie-8.[1-5]|trixie-8.5-beta[0-9]|trixie-8.5-rc) ;;
+	    trixie-*) continue ;;
+	  esac
+
+    # we only compile fpm-zts variant
+	  variant=fpm-zts
+
+    export suite variant
+    variants="$(jq <<<"$variants" -c '. + [ env.suite + "/" + env.variant ]')"
+  done
 
 	echo "$version: $fullVersion"
 
