@@ -22,7 +22,7 @@ jobs:
 
   generate-jobs:
     name: Generate Jobs
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2404
     outputs:
       strategy: ${{ steps.generate-jobs.outputs.strategy }}
     steps:
