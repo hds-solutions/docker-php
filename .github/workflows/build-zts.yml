@@ -81,7 +81,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/hds-solutions/php-fpm-zts
+          images: ghcr.io/${{ github.repository_owner }}/php-fpm-zts
           tags: |
             type=raw,value=${{ matrix.version }}
             type=raw,value=${{ matrix.patch }}
@@ -93,8 +93,8 @@ jobs:
           context: ./${{ matrix.directory }}
           push: true
           tags: |
-            ghcr.io/hds-solutions/php-fpm-zts:${{ matrix.version }}
-            ghcr.io/hds-solutions/php-fpm-zts:${{ matrix.patch }}
+            ghcr.io/${{ github.repository_owner }}/php-fpm-zts:${{ matrix.version }}
+            ghcr.io/${{ github.repository_owner }}/php-fpm-zts:${{ matrix.patch }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
