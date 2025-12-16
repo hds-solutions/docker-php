@@ -1,0 +1,103 @@
+name: Build ZTS Images
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Run daily at 2 AM UTC
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/zts
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  generate-matrix:
+    name: Generate Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run update.sh and capture output
+        run: |
+          ./update.sh > update-output.txt 2>&1
+
+      - name: Parse output and generate matrix
+        id: set-matrix
+        run: |
+          # Parse the output to extract version mappings and directories
+          matrix=$(awk '
+            # First pass: collect version mappings
+            /^[0-9]+\.[0-9]+: [0-9]+\.[0-9]+\.[0-9]+/ {
+              split($0, parts, ": ");
+              version = parts[1];
+              patch = parts[2];
+              versions[version] = patch;
+            }
+            # Second pass: process directories and build matrix entries
+            /^processing [0-9]+\.[0-9]+\/.*\/fpm-zts \.\.\.$/ {
+              line = substr($0, 12, length($0) - 15);  # Remove "processing " and " ..."
+              split(line, parts, "/");
+              version = parts[1];
+              distro = parts[2];
+              variant = parts[3];
+              directory = version "/" distro "/" variant;
+              
+              if (version in versions) {
+                patch = versions[version];
+                print "{\"version\":\"" version "\",\"patch\":\"" patch "\",\"directory\":\"" directory "\"}";
+              }
+            }
+          ' update-output.txt | jq -s -c '{"include": .}')
+
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+  build-and-push:
+    name: Build PHP v${{ matrix.version }}
+    needs: generate-matrix
+    runs-on: ubuntu-latest
+    if: needs.generate-matrix.outputs.matrix != '{"include":[]}'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/hds-solutions/php-fpm-zts
+          tags: |
+            type=raw,value=${{ matrix.version }}
+            type=raw,value=${{ matrix.patch }}
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./${{ matrix.directory }}
+          push: true
+          tags: |
+            ghcr.io/hds-solutions/php-fpm-zts:${{ matrix.version }}
+            ghcr.io/hds-solutions/php-fpm-zts:${{ matrix.patch }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image digest
+        run: echo ${{ steps.build.outputs.digest }}
