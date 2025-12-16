@@ -14,6 +14,10 @@ RUN set -eux; \
 		echo 'Pin: release *'; \
 		echo 'Pin-Priority: -1'; \
 	} > /etc/apt/preferences.d/no-debian-php
+# Use archive repositories for Debian Stretch
+RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list; \
+	sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list; \
+	sed -i '/stretch-updates/d' /etc/apt/sources.list
 
 # dependencies required for running "phpize"
 # (see persistent deps below)
@@ -69,6 +73,7 @@ RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends gnupg; \
+	apt-get install -y --no-install-recommends dirmngr; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
 	mkdir -p /usr/src; \
@@ -100,13 +105,10 @@ RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		libargon2-dev \
 		libcurl4-openssl-dev \
-		libonig-dev \
 		libreadline-dev \
-		libsodium-dev \
 		libsqlite3-dev \
-		libssl-dev \
+		libssl1.0-dev \
 		libxml2-dev \
 		zlib1g-dev \
 	; \
@@ -215,9 +217,6 @@ RUN set -eux; \
 	php --version
 
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
-
-# sodium was built as a shared module (so that it can be replaced later if so desired), so let's enable it too (https://github.com/docker-library/php/issues/598)
-RUN docker-php-ext-enable sodium
 
 ENTRYPOINT ["docker-php-entrypoint"]
 WORKDIR /var/www/html
