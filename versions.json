@@ -50,40 +50,40 @@
   },
   "8.1-rc": null,
   "8.2": {
-    "version": "8.2.30",
-    "url": "https://www.php.net/distributions/php-8.2.30.tar.xz",
-    "ascUrl": "https://www.php.net/distributions/php-8.2.30.tar.xz.asc",
-    "sha256": "bc90523e17af4db46157e75d0c9ef0b9d0030b0514e62c26ba7b513b8c4eb015",
+    "version": "8.2.32",
+    "url": "https://www.php.net/distributions/php-8.2.32.tar.xz",
+    "ascUrl": "https://www.php.net/distributions/php-8.2.32.tar.xz.asc",
+    "sha256": "e02aa173c236c12791696254d607da680e6d5516f8f5c2339642de7c4f944bd2",
     "variants": [
       "trixie/fpm-zts"
     ]
   },
   "8.2-rc": null,
   "8.3": {
-    "version": "8.3.30",
-    "url": "https://www.php.net/distributions/php-8.3.30.tar.xz",
-    "ascUrl": "https://www.php.net/distributions/php-8.3.30.tar.xz.asc",
-    "sha256": "67f084d36852daab6809561a7c8023d130ca07fc6af8fb040684dd1414934d48",
+    "version": "8.3.32",
+    "url": "https://www.php.net/distributions/php-8.3.32.tar.xz",
+    "ascUrl": "https://www.php.net/distributions/php-8.3.32.tar.xz.asc",
+    "sha256": "8698ec1f9402fa5e5e872ae3d0916b62f5f27503c1fbfc9cc3521e113355ea92",
     "variants": [
       "trixie/fpm-zts"
     ]
   },
   "8.3-rc": null,
   "8.4": {
-    "version": "8.4.20",
-    "url": "https://www.php.net/distributions/php-8.4.20.tar.xz",
-    "ascUrl": "https://www.php.net/distributions/php-8.4.20.tar.xz.asc",
-    "sha256": "e454c6f7c89a42f41ebb06dc5c3578e8c8b5f1a3f0da6675665affab04e221f7",
+    "version": "8.4.23",
+    "url": "https://www.php.net/distributions/php-8.4.23.tar.xz",
+    "ascUrl": "https://www.php.net/distributions/php-8.4.23.tar.xz.asc",
+    "sha256": "1ab9f52008414e43bb2427ffa288eff2a4de39e1a830f957e800ba368d887a72",
     "variants": [
       "trixie/fpm-zts"
     ]
   },
   "8.4-rc": null,
   "8.5": {
-    "version": "8.5.5",
-    "url": "https://www.php.net/distributions/php-8.5.5.tar.xz",
-    "ascUrl": "https://www.php.net/distributions/php-8.5.5.tar.xz.asc",
-    "sha256": "95bec382f4bd00570a8ef52a58ec04d8d9b9a90494781f1c106d1b274a3902f2",
+    "version": "8.5.8",
+    "url": "https://www.php.net/distributions/php-8.5.8.tar.xz",
+    "ascUrl": "https://www.php.net/distributions/php-8.5.8.tar.xz.asc",
+    "sha256": "58910198d19e873048fe87cdfe16bc790025417ede3d1651bfa1c4b533d573f2",
     "variants": [
       "trixie/fpm-zts"
     ]
