@@ -94,7 +94,7 @@ for version in "${versions[@]}"; do
 	    bullseye-*) continue ;;
 
 	    # trixie is used for PHP v8.1+
-	    trixie-8.[1-5]|trixie-8.5-beta[0-9]|trixie-8.5-rc) ;;
+	    trixie-8.[1-6]|trixie-8.6-alpha[0-9]|trixie-8.6-beta[0-9]|trixie-8.6-rc) ;;
 	    trixie-*) continue ;;
 	  esac
 
