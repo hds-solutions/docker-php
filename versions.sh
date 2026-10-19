@@ -20,7 +20,7 @@ for version in "${versions[@]}"; do
 
 	# scrape the relevant API based on whether we're looking for pre-releases
 	if [ "$rcVersion" = "$version" ]; then
-		apiUrl="https://www.php.net/releases/index.php?json&max=100&version=${rcVersion%%.*}"
+		apiUrl="https://www.php.net/releases/index.php?json&max=200&version=${rcVersion%%.*}"
 		apiJqExpr='
 			(keys[] | select(startswith(env.rcVersion))) as $version
 			| [ $version, (
