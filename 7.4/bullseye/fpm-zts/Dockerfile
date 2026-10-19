@@ -14,6 +14,10 @@ RUN set -eux; \
 		echo 'Pin: release *'; \
 		echo 'Pin-Priority: -1'; \
 	} > /etc/apt/preferences.d/no-debian-php
+# Use archive repositories for EOL Debian suite
+RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list; \
+	sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list; \
+	sed -i '/bullseye-updates/d' /etc/apt/sources.list
 
 # dependencies required for running "phpize"
 # (see persistent deps below)
